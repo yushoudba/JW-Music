@@ -4,13 +4,15 @@
 
 | 檔案 | 說明 |
 |------|------|
-| **`主旋律加左手伴奏-{{VERSION}}.png`（或 `-pageN.png`）** | **推薦**：右手主旋律 + 左手伴奏 |
-| `主旋律加左手伴奏-{{VERSION}}.ly` | LilyPond 原始檔 |
-| `來源/主旋律-{{VERSION}}.*` | 你提供的主旋律圖 |
+| **`{{NUMBER}}-{{VERSION}}-pageN.png`** | **推薦**：右手主旋律 + 左手伴奏 |
+| `{{NUMBER}}-{{VERSION}}.ly` | LilyPond 原始檔 |
+| `來源/{{VERSION}}-pageN.png` | 你提供的主旋律圖 |
+
+資料夾僅用編號：`音樂/{{FOLDER}}/`。
 
 ## 編譯（PNG，不要 PDF）
 
 ```bash
 cd "音樂/{{FOLDER}}"
-python ../scripts/compile_score.py --song-dir . --score "主旋律加左手伴奏-{{VERSION}}" --publish
+python ../scripts/compile_score.py --song-dir . --score "{{NUMBER}}-{{VERSION}}" --publish
 ```

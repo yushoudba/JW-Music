@@ -1,24 +1,10 @@
-\version "2.24.3"
+\version "2.26.0"
 
 %% 156 我有信心 — 主旋律 + 左手伴奏（大譜表）v01
-%% 旋律依官方主旋律譜（C 大調寫法）；過門為降 E
+%% 旋律依使用者提供的主旋律圖；過門為降 E
 %% 左手：4/4 分解／柱式（個人練習編配）
 
-\paper {
-  #(set-paper-size "a4")
-  #(define fonts
-    (set-global-fonts
-     #:sans "WenQuanYi Micro Hei"
-     #:roman "WenQuanYi Micro Hei"
-     #:factor (/ staff-height pt 20)
-   ))
-  indent = 14
-  top-margin = 12
-  bottom-margin = 12
-  left-margin = 12
-  right-margin = 12
-  system-system-spacing.basic-distance = 15
-}
+\include "../common/paper-a4-cjk.ily"
 
 \header {
   title = "我有信心"

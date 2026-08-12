@@ -56,19 +56,31 @@ def source_stamp() -> str:
 
 def song_dirs(root: Path) -> list[Path]:
     out: list[Path] = []
-    for p in sorted(root.iterdir()):
+    for p in sorted(root.iterdir(), key=lambda x: (0, int(x.name)) if x.name.isdigit() else (1, x.name)):
         if not p.is_dir() or p.name in SKIP_DIRS:
             continue
-        if re.match(r"^\d+-", p.name) or (p / "song-meta.yaml").is_file():
+        # Prefer number-only folders; keep legacy "156-歌名" during transition.
+        if re.match(r"^\d+$", p.name) or re.match(r"^\d+-", p.name) or (p / "song-meta.yaml").is_file():
             out.append(p)
     return out
+
+
+def song_title(song: Path) -> str:
+    meta = song / "song-meta.yaml"
+    if meta.is_file():
+        for line in meta.read_text(encoding="utf-8").splitlines():
+            if line.strip().startswith("title:"):
+                return line.split(":", 1)[1].strip().strip('"').strip("'")
+    return song.name
 
 
 def build_gallery(root: Path) -> str:
     lines: list[str] = []
     for song in song_dirs(root):
         name = song.name
-        lines.append(f"### [{name}]({name}/)")
+        title = song_title(song)
+        label = f"{name} {title}" if title and title != name else name
+        lines.append(f"### [{label}]({name}/)")
         lines.append("")
         pngs = sorted(song.glob("*-v*-page*.png"))
         pngs = [p for p in pngs if PAGE_PNG_RE.search(p.name)]
@@ -151,7 +163,14 @@ def write_public_links(mirror: Path, repo: str, song_filter: str) -> None:
     base = f"https://raw.githubusercontent.com/{repo}/main"
     print("")
     print("=== Public PNG links ===")
-    dirs = [p for p in sorted(mirror.iterdir()) if p.is_dir() and re.match(r"^\d+-", p.name)]
+    dirs = [
+        p
+        for p in sorted(
+            mirror.iterdir(),
+            key=lambda x: (0, int(x.name)) if x.name.isdigit() else (1, x.name),
+        )
+        if p.is_dir() and (re.match(r"^\d+$", p.name) or re.match(r"^\d+-", p.name))
+    ]
     if song_filter:
         dirs = [p for p in dirs if p.name == song_filter or song_filter in p.name]
     for d in dirs:

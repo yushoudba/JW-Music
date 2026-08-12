@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create a new song folder under 音樂/ from templates."""
+"""Create a new song folder under 音樂/{number}/ from templates."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ def music_root() -> Path:
 
 
 def main() -> int:
-    p = argparse.ArgumentParser(description="Create song folder under 音樂/")
+    p = argparse.ArgumentParser(description="Create song folder 音樂/{number}/")
     p.add_argument("--number", type=int, required=True)
     p.add_argument("--title", required=True)
     p.add_argument("--key", default="C")
@@ -27,7 +27,7 @@ def main() -> int:
 
     root = music_root()
     ver = args.version if str(args.version).startswith("v") else f"v{args.version}"
-    folder_name = f"{args.number}-{args.title}"
+    folder_name = str(args.number)
     song_dir = root / folder_name
     if song_dir.exists():
         print(f"Already exists: {song_dir}", file=sys.stderr)
@@ -48,7 +48,7 @@ tempo_bpm: {args.tempo_bpm}
 scripture: "{args.scripture}"
 accompaniment: {acc}
 recommended_version: "{ver}"
-notes: "旋律依官方主旋律譜；左手為個人練習編配"
+notes: "旋律依使用者提供的主旋律圖；左手為個人練習編配"
 """
     (song_dir / "song-meta.yaml").write_text(meta, encoding="utf-8", newline="\n")
 
@@ -69,19 +69,21 @@ notes: "旋律依官方主旋律譜；左手為個人練習編配"
         readme_tpl = readme_tpl.replace(k, v)
     (song_dir / "README.md").write_text(readme_tpl, encoding="utf-8", newline="\n")
 
-    ly_tpl_path = root / "_templates" / "主旋律加左手伴奏-v01.ly.tpl"
+    ly_tpl_path = root / "_templates" / "song-v01.ly.tpl"
+    if not ly_tpl_path.is_file():
+        ly_tpl_path = root / "_templates" / "主旋律加左手伴奏-v01.ly.tpl"
     ly_tpl = ly_tpl_path.read_text(encoding="utf-8")
     for k, v in replacements.items():
         ly_tpl = ly_tpl.replace(k, v)
-    ly_name = f"主旋律加左手伴奏-{ver}.ly"
+    ly_name = f"{args.number}-{ver}.ly"
     (song_dir / ly_name).write_text(ly_tpl, encoding="utf-8", newline="\n")
 
     print(f"Created: {song_dir}")
-    print(f"Next: put melody image in 來源/主旋律-{ver}.* then edit {ly_name}")
+    print(f"Next: put melody image in 來源/{ver}-page1.png then edit {ly_name}")
     compile_py = Path(__file__).resolve().parent / "compile_score.py"
     print(
         f'Compile: python "{compile_py}" '
-        f'--song-dir "{song_dir}" --score "主旋律加左手伴奏-{ver}" --publish'
+        f'--song-dir "{song_dir}" --score "{args.number}-{ver}" --publish'
     )
     return 0
 
