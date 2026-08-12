@@ -6,5 +6,5 @@ tempo_mark: "讚美地"
 tempo_bpm: 80
 scripture: "詩篇 96:8"
 accompaniment: block-4/4
-recommended_version: "v01"
-notes: "旋律依 source/sjjsm_CH.pdf pp.240–241（Opus 符頭座標／來源 v01）；Capo 5 上排忽略；左手為個人練習柱式編配"
+recommended_version: "v02"
+notes: "旋律依 sjjsm_CH.pdf pp.240–241；音高以 Opus origin／肉眼符頭為準（bbox 中心偏高約 2 音級，同 156-v02）；Capo 5 上排忽略；左手柱式為個人練習編配"
