@@ -32,7 +32,7 @@
 5. **回覆使用者公開 PNG raw 鏈結**（腳本會印出；代理須轉貼）
 6. 對譜；重大改動則升版 `v01` → `v02`，再 compile -Publish
 
-電腦預設產出後必公開；手機若不能 push，只改 `.ly`，並請回電腦執行 compile -Publish。
+電腦預設產出後必公開；手機／雲端若有 `git`＋推送權限，用 Python 腳本公開（見下）。若不能 push，只改 `.ly`，並請回電腦執行 compile -Publish。
 
 ### 左手型態
 
@@ -91,6 +91,7 @@
 編伴奏 {編號或歌名} v01
 來源：{本則附圖｜路徑}
 只要 PNG
+公開庫
 ```
 
 ```
@@ -101,10 +102,25 @@
 下一版：{一句改什麼}
 ```
 
-若環境不能跑 LilyPond：只改 `.ly`／README，並回覆電腦執行：
+| 能力 | 手機／雲端 Agent | 說明 |
+|------|------------------|------|
+| 改 `.ly`、寫檔 | 通常可以 | 與電腦相同 |
+| `compile.ps1`（LilyPond） | 多半不行 | Windows 本機工具；雲端通常無 lilypond |
+| 上傳公開庫 | **可以（建議用 Python）** | `python 音樂/scripts/publish_music.py --song {編號}` |
+| `.ps1` | 多半不行 | 需 PowerShell；改用 `.py` |
+
+公開條件：環境能跑 `git`／`gh`，且已登入可 push `yushoudba/JW-Music`（例如本機已 `gh auth`，或雲端設好 `GH_TOKEN`）。
+
+若不能編譯也不能 push：只改 `.ly`，回覆電腦執行：
 
 ```powershell
-音樂\scripts\compile.ps1 -SongDir "音樂\{編號}-{歌名}" -Score "主旋律加左手伴奏-v0N"
+音樂\scripts\compile.ps1 -SongDir "音樂\{編號}-{歌名}" -Score "主旋律加左手伴奏-v0N" -Publish
+```
+
+若 PNG 已在工作區、只需公開：
+
+```bash
+python 音樂/scripts/publish_music.py --song 163
 ```
 
 ## 二腦
@@ -116,10 +132,14 @@
 ## 腳本
 
 ```powershell
-音樂\scripts\new-song.ps1 -Number 200 -Title "歌名" -Key C -Time "3/4"
+# 電腦（Windows）：編譯 + 公開
 音樂\scripts\compile.ps1 -SongDir "音樂\200-歌名" -Score "主旋律加左手伴奏-v01" -Publish
-# 或只同步公開庫並印鏈結：
 音樂\scripts\publish-music.ps1 -Song "200-歌名"
+```
+
+```bash
+# 手機／雲端／跨平台：只同步公開庫並印鏈結（Python）
+python 音樂/scripts/publish_music.py --song 200
 ```
 
 LilyPond 搜尋順序：PATH → `C:\Tools\LilyPond\lilypond-2.26.0\bin` → `%LOCALAPPDATA%\LilyPond\*\bin`。
@@ -127,8 +147,9 @@ LilyPond 搜尋順序：PATH → `C:\Tools\LilyPond\lilypond-2.26.0\bin` → `%L
 ## 對外公開
 
 - 公開鏡像庫：[yushoudba/JW-Music](https://github.com/yushoudba/JW-Music)（Public，`main`）
-- 真相來源仍是本私有庫 `音樂/`；單向同步：`publish-music.ps1` / `compile -Publish`
+- 真相來源仍是本私有庫 `音樂/`；單向同步：`publish-music.ps1`／`publish_music.py`／`compile -Publish`
 - **產出後預設立刻 push main，並提供 raw PNG 鏈結**；勿在公開庫當工作區改譜
+- 手機優先：`python 音樂/scripts/publish_music.py --song …`（不依賴 ps1）
 
 ## 用途聲明
 
