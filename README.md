@@ -10,10 +10,6 @@
 
 ## 曲目
 
-### [_templates](_templates/)
-
-_No recommended PNG yet._
-
 ### [163-我的眼睛多麼有福](163-我的眼睛多麼有福/)
 
 _No recommended PNG yet._

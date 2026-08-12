@@ -65,8 +65,11 @@ function Ensure-Mirror {
 }
 
 function Get-SongDirs {
+  $skip = @("_templates", "common", "scripts", ".cursor")
   Get-ChildItem $musicRoot -Directory | Where-Object {
-    $_.Name -match '^\d+-' -or (Test-Path (Join-Path $_.FullName "song-meta.yaml"))
+    ($skip -notcontains $_.Name) -and (
+      $_.Name -match '^\d+-' -or (Test-Path (Join-Path $_.FullName "song-meta.yaml"))
+    )
   } | Sort-Object Name
 }
 
