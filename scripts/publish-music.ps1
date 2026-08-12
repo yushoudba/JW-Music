@@ -180,33 +180,24 @@ function Write-PublicPngLinks {
   $base = "https://raw.githubusercontent.com/$PublicRepo/main"
   Write-Output ""
   Write-Output "=== Public PNG links ==="
-  $dirs = Get-ChildItem $MirrorDir -Directory | Where-Object {
-    $_.Name -match '^\d+-' -or (Test-Path (Join-Path $_.FullName "song-meta.yaml"))
-  } | Sort-Object Name
+  $dirs = @(Get-ChildItem $MirrorDir -Directory | Where-Object { $_.Name -match '^\d+-' } | Sort-Object Name)
   if ($SongFilter) {
-    $dirs = $dirs | Where-Object {
+    $dirs = @($dirs | Where-Object {
       $_.Name -eq $SongFilter -or $_.Name -like "*$SongFilter*"
-    }
+    })
   }
   foreach ($d in $dirs) {
-    $pngs = @(Get-ChildItem $d.FullName -Filter "主旋律加左手伴奏-v*-page*.png" -ErrorAction SilentlyContinue | Sort-Object Name)
-    if ($pngs.Count -eq 0) {
-      $pngs = @(Get-ChildItem $d.FullName -Filter "主旋律加左手伴奏-v*.png" -ErrorAction SilentlyContinue | Sort-Object Name)
-    }
+    $pngs = @(Get-ChildItem $d.FullName -File -Filter "*.png" -ErrorAction SilentlyContinue |
+      Where-Object { $_.Name -match '-v\d+-page\d+\.png$' } |
+      Sort-Object Name)
     foreach ($p in $pngs) {
-      $seg1 = [uri]::EscapeDataString($d.Name)
-      $seg2 = [uri]::EscapeDataString($p.Name)
-      Write-Output "$base/$seg1/$seg2"
+      $url = "{0}/{1}/{2}" -f $base, [uri]::EscapeDataString($d.Name), [uri]::EscapeDataString($p.Name)
+      Write-Output $url
     }
   }
   Write-Output "Repo: https://github.com/$PublicRepo"
-  if ($SongFilter) {
-    $hit = Get-ChildItem $MirrorDir -Directory | Where-Object {
-      $_.Name -eq $SongFilter -or $_.Name -like "*$SongFilter*"
-    } | Select-Object -First 1
-    if ($hit) {
-      Write-Output ("Tree: https://github.com/{0}/tree/main/{1}" -f $PublicRepo, [uri]::EscapeDataString($hit.Name))
-    }
+  if ($SongFilter -and $dirs.Count -gt 0) {
+    Write-Output ("Tree: https://github.com/{0}/tree/main/{1}" -f $PublicRepo, [uri]::EscapeDataString($dirs[0].Name))
   }
 }
 
