@@ -144,6 +144,7 @@ python 音樂/scripts/publish_music.py --song 200
 - 公開鏡像：[yushoudba/JW-Music](https://github.com/yushoudba/JW-Music)
 - 曲目路徑：`https://github.com/yushoudba/JW-Music/tree/main/{編號}`
 - 真相來源：私有庫 `音樂/`；單向同步
+- **手機推公開庫**：設 Cursor Secret `JW_MUSIC_TOKEN`（步驟見 [手機推公開庫-GH_TOKEN.md](手機推公開庫-GH_TOKEN.md)），再說「公開庫 {編號}」
 
 ## 用途聲明
 

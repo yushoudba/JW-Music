@@ -183,6 +183,48 @@ def write_public_links(mirror: Path, repo: str, song_filter: str) -> None:
         print(f"Tree: https://github.com/{repo}/tree/main/{quote(dirs[0].name)}")
 
 
+def github_token() -> str | None:
+    """Prefer JW_MUSIC_TOKEN (Cursor secret); also accept GH_TOKEN / GITHUB_TOKEN."""
+    for key in ("JW_MUSIC_TOKEN", "GH_TOKEN", "GITHUB_TOKEN"):
+        val = os.environ.get(key, "").strip()
+        if not val:
+            continue
+        # Cursor may inject App token as GH_TOKEN (ghs_...); skip when possible.
+        if key == "GH_TOKEN" and val.startswith("ghs_"):
+            continue
+        return val
+    ghs = os.environ.get("GH_TOKEN", "").strip()
+    return ghs or None
+
+
+def push_main(mirror: Path, repo: str) -> int:
+    """Push HEAD to main. Prefer env token (mobile/cloud); else default git creds."""
+    token = github_token()
+    if token:
+        src = "JW_MUSIC_TOKEN" if os.environ.get("JW_MUSIC_TOKEN") else "GH_TOKEN/GITHUB_TOKEN"
+        print(f"Auth: {src} (one-shot URL push; token not saved in .git/config)")
+        push_url = f"https://x-access-token:{token}@github.com/{repo}.git"
+        cp = run(["git", "push", "-u", push_url, "HEAD:main"], cwd=mirror, check=False)
+    else:
+        print("Auth: default git credentials (no JW_MUSIC_TOKEN / GH_TOKEN in env)")
+        cp = run(["git", "push", "-u", "origin", "HEAD:main"], cwd=mirror, check=False)
+    if cp.returncode != 0:
+        err = (cp.stderr or cp.stdout or "").strip()
+        if err:
+            tok = github_token()
+            if tok and tok in err:
+                err = err.replace(tok, "***")
+            print(err, file=sys.stderr)
+        print(
+            "Push failed. Desktop: gh auth login. "
+            "Mobile/cloud: set Cursor secret JW_MUSIC_TOKEN "
+            "(PAT with write access to yushoudba/JW-Music). "
+            "See 音樂/手機推公開庫-GH_TOKEN.md",
+            file=sys.stderr,
+        )
+    return cp.returncode
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Publish 音樂/ mirror to JW-Music")
     parser.add_argument("--mirror-dir", type=Path, default=default_mirror_dir())
@@ -214,15 +256,9 @@ def main() -> int:
         if args.skip_push:
             print("SkipPush: commit created locally only.")
         else:
-            cp = run(["git", "push", "-u", "origin", "HEAD:main"], cwd=mirror, check=False)
-            if cp.returncode != 0:
-                print(cp.stderr or cp.stdout, file=sys.stderr)
-                print(
-                    "Push failed. Need git credentials for JW-Music "
-                    "(gh auth login / GH_TOKEN). On mobile/cloud, ensure the agent can push.",
-                    file=sys.stderr,
-                )
-                return cp.returncode
+            code = push_main(mirror, args.repo)
+            if code != 0:
+                return code
             print(f"Pushed to https://github.com/{args.repo}")
 
     write_public_links(mirror, args.repo, args.song)
