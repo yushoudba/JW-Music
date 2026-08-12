@@ -48,7 +48,7 @@ tempo_bpm: {args.tempo_bpm}
 scripture: "{args.scripture}"
 accompaniment: {acc}
 recommended_version: "{ver}"
-notes: "旋律依使用者提供的主旋律圖；左手為個人練習編配"
+notes: "旋律依 source/sjjsm_CH.pdf（或覆寫來源圖）；左手為個人練習編配"
 """
     (song_dir / "song-meta.yaml").write_text(meta, encoding="utf-8", newline="\n")
 

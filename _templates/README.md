@@ -6,7 +6,7 @@
 |------|------|
 | **`{{NUMBER}}-{{VERSION}}-pageN.png`** | **推薦**：右手主旋律 + 左手伴奏 |
 | `{{NUMBER}}-{{VERSION}}.ly` | LilyPond 原始檔 |
-| `來源/{{VERSION}}-pageN.png` | 你提供的主旋律圖 |
+| `來源/{{VERSION}}-pageN.png` | 自 `source/sjjsm_CH.pdf` 截出或覆寫圖 |
 
 資料夾僅用編號：`音樂/{{FOLDER}}/`。
 
