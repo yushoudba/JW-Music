@@ -13,7 +13,7 @@
 
 ## 編譯（PNG，不要 PDF）
 
-```powershell
-cd "音樂\163-我的眼睛多麼有福"
-..\scripts\compile.ps1 -Score "主旋律加左手伴奏-v01"
+```bash
+cd "音樂/163-我的眼睛多麼有福"
+python ../scripts/compile_score.py --song-dir . --score "主旋律加左手伴奏-v01" --publish
 ```

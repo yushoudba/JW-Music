@@ -4,7 +4,7 @@
 
 旋律依官方主旋律譜；左手為個人練習編配，僅供個人練習分享。
 
-工作區在私有庫 `JW-Work/音樂/`；本庫為公開鏡像。同步指令：`音樂/scripts/publish-music.ps1`。
+工作區在私有庫 `JW-Work/音樂/`；本庫為公開鏡像。同步指令：`python 音樂/scripts/publish_music.py`。
 
 協定：[Music-Sheet-Flow.md](Music-Sheet-Flow.md)
 

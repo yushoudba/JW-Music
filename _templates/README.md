@@ -10,7 +10,7 @@
 
 ## 編譯（PNG，不要 PDF）
 
-```powershell
+```bash
 cd "音樂/{{FOLDER}}"
-..\scripts\compile.ps1 -Score "主旋律加左手伴奏-{{VERSION}}"
+python ../scripts/compile_score.py --song-dir . --score "主旋律加左手伴奏-{{VERSION}}" --publish
 ```
