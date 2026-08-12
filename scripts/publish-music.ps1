@@ -6,7 +6,8 @@ param(
   [string]$MirrorDir = "C:\Git\JW-Music",
   [string]$PublicRepo = "yushoudba/JW-Music",
   [switch]$SkipPush,
-  [string]$Message = ""
+  [string]$Message = "",
+  [string]$Song = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -174,6 +175,39 @@ try {
 }
 finally { Pop-Location }
 
-Write-Output ""
-Write-Output "Public tree: https://github.com/$PublicRepo/tree/main"
-Write-Output "Example song: https://github.com/$PublicRepo/tree/main/163-%E6%88%91%E7%9A%84%E7%9C%BC%E7%9D%9B%E5%A4%9A%E9%BA%BC%E6%9C%89%E7%A6%8F"
+function Write-PublicPngLinks {
+  param([string]$SongFilter)
+  $base = "https://raw.githubusercontent.com/$PublicRepo/main"
+  Write-Output ""
+  Write-Output "=== Public PNG links ==="
+  $dirs = Get-ChildItem $MirrorDir -Directory | Where-Object {
+    $_.Name -match '^\d+-' -or (Test-Path (Join-Path $_.FullName "song-meta.yaml"))
+  } | Sort-Object Name
+  if ($SongFilter) {
+    $dirs = $dirs | Where-Object {
+      $_.Name -eq $SongFilter -or $_.Name -like "*$SongFilter*"
+    }
+  }
+  foreach ($d in $dirs) {
+    $pngs = @(Get-ChildItem $d.FullName -Filter "主旋律加左手伴奏-v*-page*.png" -ErrorAction SilentlyContinue | Sort-Object Name)
+    if ($pngs.Count -eq 0) {
+      $pngs = @(Get-ChildItem $d.FullName -Filter "主旋律加左手伴奏-v*.png" -ErrorAction SilentlyContinue | Sort-Object Name)
+    }
+    foreach ($p in $pngs) {
+      $seg1 = [uri]::EscapeDataString($d.Name)
+      $seg2 = [uri]::EscapeDataString($p.Name)
+      Write-Output "$base/$seg1/$seg2"
+    }
+  }
+  Write-Output "Repo: https://github.com/$PublicRepo"
+  if ($SongFilter) {
+    $hit = Get-ChildItem $MirrorDir -Directory | Where-Object {
+      $_.Name -eq $SongFilter -or $_.Name -like "*$SongFilter*"
+    } | Select-Object -First 1
+    if ($hit) {
+      Write-Output ("Tree: https://github.com/{0}/tree/main/{1}" -f $PublicRepo, [uri]::EscapeDataString($hit.Name))
+    }
+  }
+}
+
+Write-PublicPngLinks -SongFilter $Song

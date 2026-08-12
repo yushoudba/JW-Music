@@ -28,8 +28,11 @@
 1. `new-song.ps1` 建夾（或沿用既有夾）
 2. 放入 `來源/主旋律-vNN` 圖檔
 3. 依圖寫入 `.ly`：`melody`／`chordNames`／`leftHand`（**絕對音高**，勿 `\relative`）
-4. `compile.ps1` 出 PNG；若 LilyPond 旁生 PDF → 腳本刪除
-5. 對譜；重大改動則升版 `v01` → `v02`
+4. `compile.ps1 -Publish` 出 PNG，並推送到公開庫 `JW-Music` 的 **main**
+5. **回覆使用者公開 PNG raw 鏈結**（腳本會印出；代理須轉貼）
+6. 對譜；重大改動則升版 `v01` → `v02`，再 compile -Publish
+
+電腦預設產出後必公開；手機若不能 push，只改 `.ly`，並請回電腦執行 compile -Publish。
 
 ### 左手型態
 
@@ -55,9 +58,11 @@
 
 ## 產出
 
-- **交付**：PNG（多頁 `-page1.png`…）
+- **交付**：PNG（多頁 `-page1.png`…）＋推上 [JW-Music](https://github.com/yushoudba/JW-Music) `main` 後的 **raw 圖片鏈結**
 - **不交付**：PDF（第一階段；`compile.ps1` 刪旁生 PDF）
 - **可編輯來源**：僅 `.ly`
+
+代理完成一首／一版後的標準回覆：先給 raw PNG 網址列表，再附 tree 連結。
 
 ## 手機 Cursor vs 電腦 Cursor
 
@@ -112,17 +117,18 @@
 
 ```powershell
 音樂\scripts\new-song.ps1 -Number 200 -Title "歌名" -Key C -Time "3/4"
-音樂\scripts\compile.ps1 -SongDir "音樂\200-歌名" -Score "主旋律加左手伴奏-v01"
-音樂\scripts\publish-music.ps1
+音樂\scripts\compile.ps1 -SongDir "音樂\200-歌名" -Score "主旋律加左手伴奏-v01" -Publish
+# 或只同步公開庫並印鏈結：
+音樂\scripts\publish-music.ps1 -Song "200-歌名"
 ```
 
 LilyPond 搜尋順序：PATH → `C:\Tools\LilyPond\lilypond-2.26.0\bin` → `%LOCALAPPDATA%\LilyPond\*\bin`。
 
 ## 對外公開
 
-- 公開鏡像庫：[yushoudba/JW-Music](https://github.com/yushoudba/JW-Music)（Public）
-- 真相來源仍是本私有庫 `音樂/`；單向同步：`publish-music.ps1`
-- 編好 PNG 後再 publish；勿在公開庫直接當工作區改譜
+- 公開鏡像庫：[yushoudba/JW-Music](https://github.com/yushoudba/JW-Music)（Public，`main`）
+- 真相來源仍是本私有庫 `音樂/`；單向同步：`publish-music.ps1` / `compile -Publish`
+- **產出後預設立刻 push main，並提供 raw PNG 鏈結**；勿在公開庫當工作區改譜
 
 ## 用途聲明
 

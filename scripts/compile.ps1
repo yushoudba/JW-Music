@@ -5,7 +5,8 @@
 param(
   [Parameter(Mandatory = $true)][string]$SongDir,
   [Parameter(Mandatory = $true)][string]$Score,
-  [int]$Resolution = 140
+  [int]$Resolution = 140,
+  [switch]$Publish
 )
 
 $ErrorActionPreference = "Stop"
@@ -106,3 +107,11 @@ if (-not $pngs) {
 
 Write-Output "OK PNG:"
 $pngs | ForEach-Object { Write-Output "  $($_.Name)" }
+
+if ($Publish) {
+  $publishScript = Join-Path $PSScriptRoot "publish-music.ps1"
+  $songName = Split-Path $songDirFull -Leaf
+  Write-Output ""
+  Write-Output "Publishing to JW-Music main..."
+  & $publishScript -Song $songName
+}
